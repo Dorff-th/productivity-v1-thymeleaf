@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.productivity.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findByUsername" resultMap="UserResultMap">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
+    <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (username, password)
+        VALUES (#{username}, #{password})
+    </insert>
+
+    <select id="findUserTaskStats" resultType="map">
+        SELECT
+        u.username,
+        COUNT(t.id) AS total,
+        SUM(CASE WHEN t.completed = true THEN 1 ELSE 0 END) AS completed
+        FROM user u
+        LEFT JOIN task t ON u.id = t.user_id
+        GROUP BY u.username
+        ORDER BY u.username
+    </select>
+
+</mapper>

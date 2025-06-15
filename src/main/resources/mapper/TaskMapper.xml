@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.productivity.mapper.TaskMapper">
+
+    <resultMap id="TaskResultMap" type="Task">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="completed" column="completed"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="TaskResultMap">
+        SELECT * FROM task ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" resultMap="TaskResultMap">
+        SELECT * FROM task WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="Task" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO task (title, description, completed, user_id)
+        VALUES (#{title}, #{description}, #{completed}, #{userId})
+    </insert>
+
+    <update id="update" parameterType="Task">
+        UPDATE task
+        SET title = #{title},
+        description = #{description},
+        completed = #{completed}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM task WHERE id = #{id}
+    </delete>
+
+    <!-- 페이징 + 검색 쿼리 -->
+    <select id="findByKeywordWithPaging" resultMap="TaskResultMap">
+        SELECT * FROM task
+        <where>
+            <if test="keyword != null and keyword != ''">
+                title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 전체 개수 조회 (검색 포함) -->
+    <select id="countByKeyword" resultType="int">
+        SELECT COUNT(*) FROM task
+        <where>
+            <if test="keyword != null and keyword != ''">
+                title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!--목록 조회시 로그인 한 유저만 -->
+    <select id="findByUserIdAndKeyword" resultMap="TaskResultMap">
+        SELECT *
+        FROM task
+        WHERE user_id = #{userId}
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%')
+            OR description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByUserIdAndKeyword" resultType="int">
+        SELECT COUNT(*)
+        FROM task
+        WHERE user_id = #{userId}
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%')
+            OR description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+    <!-- 통계 기능 추가 -->
+    <!-- 총 등록 수 -->
+    <select id="countTotalTasksByUser" resultType="int">
+        SELECT COUNT(*) FROM task WHERE user_id = #{userId}
+    </select>
+
+    <!-- 완료 수 -->
+    <select id="countCompletedTasksByUser" resultType="int">
+        SELECT COUNT(*) FROM task WHERE user_id = #{userId} AND completed = true
+    </select>
+
+    <!-- 월별 등록 수 -->
+    <select id="countTasksGroupedByMonth" resultType="map">
+        SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS count
+        FROM task
+        WHERE user_id = #{userId}
+        GROUP BY month
+        ORDER BY month
+    </select>
+
+    <!-- 월별 할일 등록 수와 완료된 할일 도 같이 조회 -->
+    <select id="countMonthlyTaskStats" resultType="map">
+        SELECT
+            DATE_FORMAT(created_at, '%Y-%m') AS month,
+            COUNT(*) AS total,
+            SUM(CASE WHEN completed = true THEN 1 ELSE 0 END) AS completed
+        FROM task
+            WHERE user_id = #{userId}
+            GROUP BY month
+            ORDER BY month
+    </select>
+
+
+
+</mapper>

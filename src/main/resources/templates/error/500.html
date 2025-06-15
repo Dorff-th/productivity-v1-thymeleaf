@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>500 - 서버 오류</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            text-align: center;
+            padding: 5rem;
+            background-color: #fff8f8;
+        }
+        .error-box {
+            background-color: #fbe9e7;
+            border: 1px solid #ffccbc;
+            padding: 2rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .error-box h1 {
+            font-size: 3rem;
+            color: #e53935;
+        }
+        .error-box p {
+            font-size: 1.2rem;
+            color: #333;
+        }
+        .error-box a {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.6rem 1.2rem;
+            background-color: #1976d2;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+        .error-box a:hover {
+            background-color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+<div class="error-box">
+    <h1>🔥 500</h1>
+    <p>죄송합니다. 서버에 문제가 발생했어요.<br>
+        개발자에게 문의하거나 잠시 후 다시 시도해 주세요.</p>
+    <a href="/tasks">홈으로 돌아가기</a>
+</div>
+</body>
+</html>

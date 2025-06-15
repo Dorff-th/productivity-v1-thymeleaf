@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>접근 거부</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            text-align: center;
+            padding: 5rem;
+        }
+        .error-box {
+            background-color: #ffecec;
+            border: 1px solid #ff9d9d;
+            padding: 2rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .error-box h1 {
+            font-size: 2.5rem;
+            color: #d32f2f;
+        }
+        .error-box p {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+        .error-box a {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.6rem 1.2rem;
+            background-color: #1976d2;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+        .error-box a:hover {
+            background-color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+<div class="error-box">
+    <h1>🚫 접근이 거부되었습니다</h1>
+    <p>이 페이지에 접근할 권한이 없습니다.</p>
+    <a href="/tasks">할 일 목록으로 돌아가기</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.5'  // 최신 버전으로 조정 가능
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'  // Java 17 이상 권장
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ✅ Spring Boot Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // ✅ Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // ✅ MyBatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+    // ✅ MariaDB JDBC Driver
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+
+    // ✅ Lombok (코드 간결화)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // ✅ Spring DevTools (핫 리로딩, 개발 편의)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // ✅ Spring Boot Test (선택)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //스프링 시큐리티 관련 모듈 의존성 주입 (직접추가)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 타임리프에서 스프링시큐리티의 문법이나 형식을 지원하는 확장팩 라이브러리
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 대시보드</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h1>📊 관리자 대시보드</h1>
+
+<div style="margin-bottom: 2rem;">
+    <a href="/tasks"><button>← 사용자 페이지로</button></a>
+</div>
+
+<canvas id="userStatsChart" height="100"></canvas>
+
+<script th:inline="javascript">
+    /*
+    const labels = [
+        <th:block th:each="stat, iter : ${stats}">
+            "<span th:text="${stat.username}"></span>"<span th:if="${!iter.last}">,</span>
+        </th:block>
+    ];
+
+    const totalData = [
+        <th:block th:each="stat, iter : ${stats}">
+            <span th:text="${stat.total}"></span><span th:if="${!iter.last}">,</span>
+        </th:block>
+    ];
+
+    const completedData = [
+        <th:block th:each="stat, iter : ${stats}">
+            <span th:text="${stat.completed}"></span><span th:if="${!iter.last}">,</span>
+        </th:block>
+    ];
+    */
+
+    const stats = [[${stats}]];
+
+    console.log(stats);
+
+    const labels = new Array();
+    const totalData  = new Array();
+    const completedData = new Array();
+
+    stats.forEach(el => {
+       labels.push(el.username);
+       totalData.push(el.count);
+       completedData.push(el.completed);
+
+    });
+
+    const ctx = document.getElementById('userStatsChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '전체 할 일',
+                    data: totalData,
+                    backgroundColor: '#64b5f6'
+                },
+                {
+                    label: '완료된 할 일',
+                    data: completedData,
+                    backgroundColor: '#81c784'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

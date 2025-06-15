@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/productivity_db
+    username: root         # 👉 실제 사용자명
+    password: 1234         # 👉 실제 비밀번호
+    driver-class-name: org.mariadb.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.productivity.model
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.example: debug
+    org.springframework.security: debug
+
+

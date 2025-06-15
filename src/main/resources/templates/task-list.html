@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>할 일 목록</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- 필요 시 -->
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>할 일 목록</h1>
+        <!--<form th:action="@{/logout}" method="post">
+            <span th:text="${#authentication.name}">사용자</span>
+            <button type="submit">로그아웃</button>
+        </form>-->
+        <div style="display: flex; gap: 0.5rem;">
+            <span th:text="${#authentication.name}">사용자</span>
+            <a th:href="@{/tasks/new}">
+                <button type="button">+ 새 할 일</button>
+            </a>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <!--<span th:text="${#authentication.name}">사용자</span>-->
+
+            <a href="/tasks">
+                <button>📋 목록</button>
+            </a>
+            <a href="/dashboard">
+                <button>📊 대시보드</button>
+            </a>
+            <a href="/logout">
+                <button>🚪 로그아웃</button>
+            </a>
+
+
+
+        </div>
+    </div>
+
+    <form method="get" th:action="@{/tasks}" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <input type="text" name="keyword" placeholder="검색어 입력" th:value="${keyword}" style="flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px;" />
+        <input type="submit" value="검색" style="background-color: #2e7dff; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+    </form>
+
+    <div style="margin-bottom: 1rem; text-align: right;">
+        <button id="toggleCompleted" style="background-color: #777; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer;">
+            ✅ 완료된 항목 숨기기
+        </button>
+    </div>
+
+
+    <div th:each="task : ${tasks}" class="task-item" th:classappend="${task.completed} ? 'completed'">
+
+        <div style="margin-right: 1rem;">
+            <button th:attr="data-task-id=${task.id}" class="toggle-complete">
+                <span th:text="${task.completed} ? '✅' : '⬜'">⬜</span>
+            </button>
+        </div>
+
+        <!-- 제목과 설멍 -->
+        <div style="flex: 1;">
+            <strong class="task-title" th:text="${task.title}"></strong><br>
+            <span  class="task-desc" th:text="${task.description}"></span>
+        </div>
+
+
+        <!-- 오른쪽 기능 아이콘 -->
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <!-- 완료 토글 버튼 -->
+
+            <button th:attr="data-task-id=${task.id}" class="toggle-complete">
+                <span th:text="${task.completed} ? '✅' : '⬜'">⬜</span>
+            </button>
+
+
+            <!-- 수정 버튼 -->
+            <a th:href="@{'/tasks/' + ${task.id} + '/edit'}" title="수정">
+                ✏️
+            </a>
+
+            <!-- 삭제 버튼 -->
+            <form th:action="@{/tasks/{id}/delete(id=${task.id})}" method="post" class="inline-form">
+                <button type="submit" title="삭제" style="padding: 0.3rem;" onclick="return confirm('정말 삭제하시겠습니까?')">❌</button>
+            </form>
+
+            <!-- 생성 날짜 -->
+            <span style="font-size: 0.8rem; color: gray;" th:text="${#temporals.format(task.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </div>
+
+    </div>
+    <!-- 기존 테이블 아래에 페이지 링크 추가 -->
+    <div style="margin-top: 1rem; text-align: center;" th:if="${totalPages > 1}">
+    <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+        <a th:href="@{/tasks(page=${pageNum}, keyword=${keyword})}"
+           th:text="${pageNum}"
+           th:classappend="${pageNum == currentPage} ? 'active' : ''"
+           style="margin: 0 4px; text-decoration: none; color: #2e7dff; font-weight: bold;">
+        </a>
+    </span>
+    </div>
+
+</div>
+</div>
+</body>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        //완료된 항목 숨시기 처리 토글 start
+        const toggleBtn = document.getElementById("toggleCompleted");
+        const completedItems = document.querySelectorAll(".task-item.completed");
+
+        // ✅ localStorage 상태 확인
+        let hidden = localStorage.getItem("hideCompleted") === "true";
+
+        // ✅ 초기 상태 반영
+        completedItems.forEach(el => {
+            if (hidden) el.classList.add("hide");
+            else el.classList.remove("hide");
+        });
+        toggleBtn.textContent = hidden ? "✅ 완료된 항목 보기" : "✅ 완료된 항목 숨기기";
+
+        // ✅ 버튼 클릭 시 상태 토글
+        toggleBtn.addEventListener("click", function () {
+            hidden = !hidden;
+
+            completedItems.forEach(el => {
+                el.classList.toggle("hide", hidden);
+            });
+
+            // ✅ localStorage에 상태 저장
+            localStorage.setItem("hideCompleted", hidden);
+            toggleBtn.textContent = hidden ? "✅ 완료된 항목 보기" : "✅ 완료된 항목 숨기기";
+        });
+
+        //완료된 함목 숨기기 처리 토글 end
+
+        document.querySelectorAll(".toggle-complete").forEach(button => {
+            button.addEventListener("click", function () {
+                const taskId = this.dataset.taskId;
+                const span = this.querySelector("span");
+                const originalText = span.textContent;
+                const isCompleted = originalText === "✅";
+
+                // 로딩 표시
+                span.textContent = "⏳";
+                this.disabled = true;
+
+                fetch(`/tasks/${taskId}/toggle`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error("토글 실패");
+                    return res.json();
+                })
+                .then(data => {
+                    // 성공: 상태 반영
+                    span.textContent = data.completed ? "✅" : "⬜";
+                    this.closest(".task-item").classList.toggle("completed", data.completed);
+                })
+                .catch(err => {
+                    // 실패: 롤백
+                    alert("상태 변경 실패");
+                    span.textContent = originalText;
+                })
+                .finally(() => {
+                    this.disabled = false;
+                });
+            });
+        });
+    });
+</script>
+
+
+
+
+</html>

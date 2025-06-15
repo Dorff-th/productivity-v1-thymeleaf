@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>할 일 목록</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- 필요 시 -->
+</head>
+<body>
+
+<div th:if="${param.unauthorized}">
+    <p style="color:red;">권한이 없습니다.</p>
+</div>
+
+<!--<p>안녕하세요, <b th:text="${#authentication?.name}">사용자</b>님!</p>-->
+
+<div th:if="${#authorization.expression('isAuthenticated()')}">
+    <form th:action="@{/logout}" method="post">
+        <span th:text="${#authentication.name}"></span> 님 |
+        <button type="submit">로그아웃</button>
+    </form>
+</div>
+
+<h1>할 일 목록</h1>
+
+<form action="/tasks" method="get">
+    <input type="text" name="keyword" placeholder="제목 검색" th:value="${keyword}">
+    <button type="submit">검색</button>
+</form>
+
+<a href="/tasks/new">+ 새 할 일 추가</a>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>완료</th>
+        <th>생성일</th>
+        <th>수정</th>
+        <th>삭제</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="task : ${tasks}"
+        th:classappend="${task.completed} ? 'task-completed'">
+
+    <td th:text="${task.id}">1</td>
+        <td th:text="${task.title}">예제 제목</td>
+        <td>
+            <!--<span th:text="${task.completed} ? '✅' : '❌'"></span>-->
+            <span class="toggle-completed"
+                  th:data-id="${task.id}"
+                  th:text="${task.completed} ? '✅' : '❌'"
+                  style="cursor: pointer;">
+            </span>
+        </td>
+        <td th:text="${#temporals.format(task.createdAt, 'yyyy-MM-dd HH:mm')}">날짜</td>
+        <td>
+            <a th:href="@{|/tasks/${task.id}/edit|}">수정</a>
+        </td>
+        <td>
+            <form th:action="@{|/tasks/${task.id}/delete|}" method="post" th:object="${task}">
+                <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 기존 테이블 아래에 페이지 링크 추가 -->
+<div style="margin-top: 20px;">
+    <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+        <a th:href="@{|/tasks?page=${i}&keyword=${keyword}|}"
+           th:text="${i}"
+           th:classappend="${i == currentPage} ? 'active'">
+        </a>
+    </span>
+</div>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.toggle-completed').forEach(function (element) {
+            element.addEventListener('click', function () {
+                const taskId = this.dataset.id;
+                const original = this.textContent;
+
+                this.textContent = '⏳';
+
+                fetch(`/tasks/${taskId}/toggle`, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'completed') {
+                        this.textContent = '✅';
+                        this.closest('tr').classList.add('task-completed');
+                    } else if (result === 'incomplete') {
+                        this.textContent = '❌';
+                        this.closest('tr').classList.remove('task-completed');
+                    } else {
+                        this.textContent = original;
+                        alert('오류가 발생했습니다.');
+                    }
+                })
+                .catch(error => {
+                    this.textContent = original;
+                    alert('요청 실패: ' + error);
+                });
+            });
+        });
+    });
+</script>
+
+
+
+</html>

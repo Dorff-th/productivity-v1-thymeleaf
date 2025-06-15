@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>할 일 작성</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h1 th:text="${task.id != null} ? '할 일 수정' : '새 할 일 추가'">할 일 작성</h1>
+
+<form th:action="${task.id != null} ? @{'/tasks/' + ${task.id}} : @{/tasks}"
+      th:object="${task}" method="post">
+
+    <div>
+        <label for="title">제목</label><br>
+        <input type="text" id="title" th:field="*{title}" required>
+    </div>
+
+    <div>
+        <label for="description">설명</label><br>
+        <textarea id="description" th:field="*{description}" rows="4" cols="50"></textarea>
+    </div>
+
+    <div>
+        <label for="completed">
+            <input type="checkbox" id="completed" th:field="*{completed}">
+            완료 여부
+        </label>
+    </div>
+
+    <div style="margin-top: 1rem;">
+        <button type="submit" th:text="${task.id != null} ? '수정' : '등록'">저장</button>
+        <a href="/tasks">취소</a>
+    </div>
+</form>
+</body>
+</html>

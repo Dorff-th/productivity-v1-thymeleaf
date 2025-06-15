@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${task.id != null} ? '할 일 수정' : '할 일 등록'">할 일</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 th:text="${task.id != null} ? '할 일 수정' : '할 일 등록'">할 일</h1>
+        <a th:href="@{/tasks}">
+            <button type="button">← 목록으로</button>
+        </a>
+    </div>
+
+    <form th:action="${task.id != null} ? @{'/tasks/' + ${task.id}} : @{/tasks}"
+          th:object="${task}" method="post">
+        <div>
+            <label for="title">제목</label>
+            <input type="text" id="title" name="title" th:field="*{title}" required>
+        </div>
+
+        <div>
+            <label for="description">설명</label>
+            <textarea id="description" name="description" rows="4" th:field="*{description}"></textarea>
+        </div>
+
+        <div th:if="${task.id != null}">
+            <label>
+                <input type="checkbox" name="completed" th:field="*{completed}">
+                완료 여부
+            </label>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <button type="submit" th:text="${task.id != null} ? '수정하기' : '등록하기'">등록</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

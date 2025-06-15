@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>404 - 페이지를 찾을 수 없습니다</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            text-align: center;
+            padding: 5rem;
+        }
+        .error-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 2rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .error-box h1 {
+            font-size: 3rem;
+            color: #ff6f00;
+        }
+        .error-box p {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            color: #333;
+        }
+        .error-box a {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.6rem 1.2rem;
+            background-color: #1976d2;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+        .error-box a:hover {
+            background-color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+<div class="error-box">
+    <h1>🔍 404</h1>
+    <p>요청하신 페이지를 찾을 수 없습니다.</p>
+    <a href="/tasks">홈으로 돌아가기</a>
+</div>
+</body>
+</html>

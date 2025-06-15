@@ -1,0 +1,27 @@
+-- USER 테이블 생성
+CREATE TABLE `user` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(50) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    `role` VARCHAR(20) NOT NULL DEFAULT 'USER',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+);
+
+-- TASK 테이블 생성
+CREATE TABLE `task` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `user_id` BIGINT NOT NULL,
+    `title` VARCHAR(100) NOT NULL,
+    `description` TEXT,
+    `completed` BOOLEAN DEFAULT FALSE,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
+);
+
+-- DDM (코멘트)
+COMMENT ON COLUMN `user`.`username` IS '사용자명(고유)';
+COMMENT ON COLUMN `user`.`role` IS '권한 (USER 또는 ADMIN)';
+COMMENT ON COLUMN `task`.`user_id` IS '해당 할 일의 소유 사용자 ID';
+COMMENT ON COLUMN `task`.`completed` IS '할 일 완료 여부';
