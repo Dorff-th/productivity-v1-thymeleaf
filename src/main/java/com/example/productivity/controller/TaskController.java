@@ -35,6 +35,8 @@ public class TaskController {
                        @RequestParam(name = "keyword", required = false) String keyword,
                        Model model) {
 
+        log.info("test");
+
         if (keyword == null) {
             keyword = "";
         }
